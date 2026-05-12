@@ -39,7 +39,7 @@ def main():
         res_perfil = supabase.table("profiles").select("is_admin").eq("id", st.session_state.user.id).single().execute()
         es_admin = res_perfil.data.get("is_admin", False)
 
-        st.sidebar.image("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a3/FIFA_World_Cup_2026_logo.svg/1200px-FIFA_World_Cup_2026_logo.svg.png", width=100)
+        st.sidebar.image("mundial_2026.jpg", width=150)
         st.sidebar.title("🏆 Mundial 2026")
         st.sidebar.write(f"👤 **Usuario:** {st.session_state.user.email}")
         
