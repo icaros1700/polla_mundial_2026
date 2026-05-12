@@ -1,0 +1,11 @@
+# Ignorar llaves maestras y secretos
+.streamlit/secrets.toml
+.env
+
+# Ignorar archivos temporales de Python
+__pycache__/
+*.pyc
+
+# Ignorar entornos virtuales (si usas uno)
+venv/
+env/
