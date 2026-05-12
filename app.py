@@ -43,6 +43,37 @@ def main():
         st.sidebar.title("🏆 Mundial 2026")
         st.sidebar.write(f"👤 **Usuario:** {st.session_state.user.email}")
         
+        
+
+        # --- CÁLCULO DEL POZO ACUMULADO ---
+        # 1. Contamos el total de jugadores registrados
+        res_count = supabase.table("profiles").select("id", count="exact").execute()
+        total_jugadores = res_count.count if res_count.count else 0
+        
+        # 2. Definimos las variables de dinero
+        costo_entrada = 50000
+        pozo_total = total_jugadores * costo_entrada
+        premio_1 = pozo_total * 0.70
+        premio_2 = pozo_total * 0.30
+
+        # 3. Diseño visual en la barra lateral
+        st.sidebar.divider()
+        st.sidebar.subheader("💰 Pozo del Mundial")
+        
+        # Mostramos el total de forma llamativa
+        st.sidebar.metric(label="Total Acumulado", value=f"${pozo_total:,.0f} COP")
+
+        
+        # Mostramos la repartición
+        col_p1, col_p2 = st.sidebar.columns(2)
+        with col_p1:
+            st.sidebar.caption("🥇 1er Puesto (70%)")
+            st.sidebar.write(f"**${premio_1:,.0f}**")
+        with col_p2:
+            st.sidebar.caption("🥈 2do Puesto (30%)")
+            st.sidebar.write(f"**${premio_2:,.0f}**")
+            
+        st.sidebar.info(f"👥 Jugadores: {total_jugadores}")
         st.sidebar.divider()
         
         # 3. Menú Dinámico: Solo agregamos el panel si es_admin es True
