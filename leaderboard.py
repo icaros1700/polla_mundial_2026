@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 def mostrar_top(supabase):
-    st.title("🥇 Ranking y Auditoría")
+    st.title("🥇 Ranking y Verificacion")
     
     # 1. Ranking General
     res = supabase.table("profiles").select("id, username, puntos").order("puntos", desc=True).execute()
@@ -14,22 +14,23 @@ def mostrar_top(supabase):
         st.divider()
         
         # 2. SECCIÓN DE AUDITORÍA: Verificar a otro usuario
-        st.subheader("🔍 Verificar Jugador")
-        usuario_a_ver = st.selectbox("Selecciona un usuario para ver sus jugadas:", df['username'].tolist())
+        st.subheader("🔍 Verificacion de Jugadas")
+        st.info("Este panel solo estara visible cuando todos los marcadores esten completos")
+        ##usuario_a_ver = st.selectbox("Selecciona un usuario para ver sus jugadas:", df['username'].tolist())
         
-        user_id_sel = df[df['username'] == usuario_a_ver]['id'].values[0]
+        #user_id_sel = df[df['username'] == usuario_a_ver]['id'].values[0]
         
         # Traer predicciones del usuario seleccionado
-        res_preds = supabase.table("predicciones").select("*, partidos(equipo_a, equipo_b)").eq("user_id", user_id_sel).execute()
+        #res_preds = supabase.table("predicciones").select("*, partidos(equipo_a, equipo_b)").eq("user_id", user_id_sel).execute()
         
-        if res_preds.data:
-            data_audit = []
-            for r in res_preds.data:
-                partido = f"{r['partidos']['equipo_a']} vs {r['partidos']['equipo_b']}"
-                marcador = f"{r['goles_a_pred']} - {r['goles_b_pred']}"
-                puntos = r.get('puntos_ganados', 0)
-                data_audit.append({"Partido": partido, "Predicción": marcador, "Pts Ganados": puntos})
+        #if res_preds.data:
+            #data_audit = []
+            #for r in res_preds.data:
+                #partido = f"{r['partidos']['equipo_a']} vs {r['partidos']['equipo_b']}"
+                #marcador = f"{r['goles_a_pred']} - {r['goles_b_pred']}"
+                #puntos = r.get('puntos_ganados', 0)
+                #data_audit.append({"Partido": partido, "Predicción": marcador, "Pts Ganados": puntos})
             
-            st.table(pd.DataFrame(data_audit))
-        else:
-            st.info("Este usuario aún no ha realizado predicciones.")
+            #st.table(pd.DataFrame(data_audit))
+        #else:
+            #st.info("Este usuario aún no ha realizado predicciones.")
