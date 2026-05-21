@@ -1,20 +1,26 @@
 import streamlit as st
 import pandas as pd
+from ui import page_header, section_title
 
 def mostrar_top(supabase):
-    st.title("🥇 Ranking y Verificacion")
+    page_header(
+        "Ranking y Auditoria",
+        "Mira quien va arriba y prepara la revision de jugadas cuando los marcadores esten completos.",
+        "Competencia",
+    )
     
     # 1. Ranking General
     res = supabase.table("profiles").select("id, username, puntos").order("puntos", desc=True).execute()
     df = pd.DataFrame(res.data)
     
     if not df.empty:
+        section_title("Tabla general", "Los puntos se actualizan cuando el administrador publica resultados oficiales.")
         st.dataframe(df[['username', 'puntos']], use_container_width=True, hide_index=True)
         
         st.divider()
         
         # 2. SECCIÓN DE AUDITORÍA: Verificar a otro usuario
-        st.subheader("🔍 Verificacion de Jugadas")
+        section_title("Verificacion de jugadas")
         st.info("Este panel solo estara visible cuando todos los marcadores esten completos")
         ##usuario_a_ver = st.selectbox("Selecciona un usuario para ver sus jugadas:", df['username'].tolist())
         
