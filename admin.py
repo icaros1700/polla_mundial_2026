@@ -1,9 +1,14 @@
 import streamlit as st
 import pandas as pd
+from ui import page_header, section_title
 
 def mostrar_panel_admin(supabase):
-    st.markdown("<h2 style='text-align: center;'>👨‍💻 Consola del Arquitecto</h2>", unsafe_allow_html=True)
-    st.info("Solo tú tienes acceso a este panel. Aquí ingresas los resultados reales.")
+    page_header(
+        "Panel del Arquitecto",
+        "Publica resultados oficiales y recalcula puntos sin salir del flujo de administracion.",
+        "Administracion",
+    )
+    st.info("Solo tu tienes acceso a este panel. Aqui ingresas los resultados reales.")
 
     # 1. Traer SOLO los partidos que aún no tienen resultado oficial
     res = supabase.table("partidos").select("*").is_("goles_a_real", "null").execute()
@@ -13,8 +18,9 @@ def mostrar_panel_admin(supabase):
         st.success("✅ Todos los partidos actuales ya tienen su resultado oficial cargado.")
         return
 
+    section_title("Cargar resultado oficial", "Selecciona un partido finalizado y confirma el marcador real.")
+
     with st.container(border=True):
-        st.subheader("Cargar Resultado Oficial")
         
         # 2. Selector de partido (formato: "Equipo A vs Equipo B")
         opciones_partidos = df_partidos["id"].tolist()

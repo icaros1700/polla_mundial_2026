@@ -1,16 +1,21 @@
 import streamlit as st
 from supabase import Client
+from ui import page_header
 
 def mostrar_auth(supabase: Client):
-    st.markdown("<h2 style='text-align: center;'>⚽ Bienvenido a la Polla del Mundial 2026</h2>", unsafe_allow_html=True)
-    
-    tab_login, tab_registro = st.tabs(["🔑 Ingresar", "📝 Registrarse"])
+    page_header(
+        "Polla Mundial 2026",
+        "Arma tus marcadores, compite con tu grupo y sigue la tabla mientras avanza el torneo.",
+        "Predicciones mundialistas",
+    )
+
+    tab_login, tab_registro = st.tabs(["Ingresar", "Registrarse"])
 
     with tab_login:
         with st.form("login_form"):
             email = st.text_input("Correo Electrónico")
             password = st.text_input("Contraseña", type="password")
-            btn_login = st.form_submit_button("Entrar al Juego", use_container_width=True)
+            btn_login = st.form_submit_button("Entrar al Juego", type="primary", use_container_width=True)
 
             if btn_login:
                 try:
@@ -26,7 +31,7 @@ def mostrar_auth(supabase: Client):
             new_email = st.text_input("Tu Correo")
             new_password = st.text_input("Crea una Contraseña Segura", type="password")
             username = st.text_input("Nombre de Usuario (Como te verán en el Ranking)")
-            btn_reg = st.form_submit_button("Crear mi Perfil", use_container_width=True)
+            btn_reg = st.form_submit_button("Crear mi Perfil", type="primary", use_container_width=True)
 
             if btn_reg:
                 if not username:

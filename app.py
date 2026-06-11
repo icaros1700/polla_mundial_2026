@@ -6,6 +6,7 @@ import predictions  # <--- Importación del nuevo módulo
 import admin
 import leaderboard
 import groups
+from ui import inject_global_styles
 
 # --- 1. CONFIGURACIÓN DE LA PÁGINA ---
 st.set_page_config(
@@ -13,6 +14,8 @@ st.set_page_config(
     page_icon="⚽", 
     layout="wide"  # 'wide' para que las tarjetas de partidos se vean mejor
 )
+
+inject_global_styles()
 
 # --- 2. CONEXIÓN A LA MATRIX (SUPABASE) ---
 @st.cache_resource
@@ -37,7 +40,7 @@ def main():
         # --- VERIFICACIÓN DE SEGURIDAD PARA ADMIN ---
         # 2. Buscamos en la tabla profiles si este usuario tiene is_admin = True
         res_perfil = supabase.table("profiles").select("is_admin").eq("id", st.session_state.user.id).single().execute()
-        es_admin = res_perfil.data.get("is_admin", False)
+        es_admin = (res_perfil.data or {}).get("is_admin", False)
 
         st.sidebar.image("mundial_2026.jpg", width=150)
         st.sidebar.title("🏆 Mundial 2026")
@@ -100,9 +103,5 @@ def main():
         elif choice == "👨‍💻 Panel del Arquitecto":
             admin.mostrar_panel_admin(supabase)
             
-        # 4. Conectamos la ruta hacia la consola secreta
-        elif choice == "👨‍💻 Panel del Arquitecto":
-            admin.mostrar_panel_admin(supabase)
-
 if __name__ == "__main__":
     main()

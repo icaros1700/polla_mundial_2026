@@ -1,8 +1,13 @@
 import streamlit as st
 import pandas as pd
+from ui import page_header, section_title
 
 def mostrar_tablas_grupos(supabase):
-    st.title("📊 Posiciones de los Grupos")
+    page_header(
+        "Tabla de Grupos",
+        "Consulta posiciones, diferencia de gol y rendimiento de cada seleccion en fase de grupos.",
+        "Clasificacion",
+    )
     
     # 1. Traemos todos los partidos
     res = supabase.table("partidos").select("*").execute()
@@ -66,6 +71,8 @@ def mostrar_tablas_grupos(supabase):
     
     grupos = sorted(df['Grupo'].unique())
     
+    section_title("Posiciones", "Ordenadas por puntos, diferencia de gol y goles a favor.")
+
     for g in grupos:
         with st.expander(f"Grupo {g}", expanded=True):
             tabla_g = df[df['Grupo'] == g].sort_values(by=['Pts', 'DG', 'GF'], ascending=False)
