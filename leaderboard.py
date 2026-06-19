@@ -16,18 +16,29 @@ def mostrar_top(supabase):
     if not df.empty:
         
         # =====================================================================
-        # 🌟 NUEVO: FLASH DE LA JORNADA (GANADORES DEL ÚLTIMO PARTIDO)
+        # 🌟 FLASH DE LA JORNADA (CORREGIDO CRONOLÓGICAMENTE CON FECHA_PARTIDO)
         # =====================================================================
         try:
-            # Traemos todos los partidos para evaluar cuál fue el último jugado
-            res_partidos = supabase.table("partidos").select("id, equipo_a, equipo_b, goles_a_real, goles_b_real").execute()
+            # Traemos todos los partidos con '*'
+            res_partidos = supabase.table("partidos").select("*").execute()
             if res_partidos.data:
-                # Filtramos en Python los partidos que ya tienen un resultado oficial cargado
+                # Filtramos los partidos que ya tienen un resultado oficial cargado
                 partidos_jugados = [p for p in res_partidos.data if p.get("goles_a_real") is not None and p.get("goles_b_real") is not None]
                 
                 if partidos_jugados:
-                    # Ordenamos por ID descendente para obtener el último partido registrado/jugado
-                    partidos_jugados.sort(key=lambda x: x.get("id", 0), reverse=True)
+                    muestra = partidos_jugados[0]
+                    
+                    # 🎯 REPARACIÓN MÁGICA: Prioridad absoluta a tu columna 'fecha_partido'
+                    if "fecha_partido" in muestra:
+                        partidos_jugados.sort(key=lambda x: x.get("fecha_partido", ""), reverse=True)
+                    elif "updated_at" in muestra:
+                        partidos_jugados.sort(key=lambda x: x.get("updated_at", ""), reverse=True)
+                    elif "fecha" in muestra:
+                        partidos_jugados.sort(key=lambda x: x.get("fecha", ""), reverse=True)
+                    else:
+                        partidos_jugados.sort(key=lambda x: x.get("id", 0), reverse=True)
+                    
+                    # Extraemos el partido más reciente en el tiempo real
                     ultimo_partido = partidos_jugados[0]
                     
                     p_id = ultimo_partido["id"]
@@ -41,23 +52,22 @@ def mostrar_top(supabase):
                     ganadores_exactos = []
                     if res_preds_match.data:
                         for pred in res_preds_match.data:
-                            # Filtro estricto de Élite: marcador exacto (2 puntos)
+                            # Filtro de Élite: marcador exacto (2 puntos)
                             if pred["goles_a_pred"] == g_a_real and pred["goles_b_pred"] == g_b_real:
-                                # Cruzamos el user_id con nuestro DataFrame general para extraer el nombre
                                 user_row = df[df["id"] == pred["user_id"]]
                                 if not user_row.empty:
                                     ganadores_exactos.append(user_row["username"].values[0])
                     
-                    # Si hubo mentes maestras que acertaron, desplegamos el gran banner de honor
+                    # Desplegamos el banner de honor dinámico
                     if ganadores_exactos:
                         nombres_ganadores = ", ".join([f"✨ **@{u}**" for u in ganadores_exactos])
                         st.info(f"📢 **Flash de la Jornada:** En el partido **{partido_nombre}** ({g_a_real} - {g_b_real}), nuestros ganadores exactos fueron: {nombres_ganadores} 🎯")
                     else:
                         st.write(f"📉 *En el partido **{partido_nombre}** ({g_a_real} - {g_b_real}), nadie logró acertar el marcador exacto.*")
         except Exception as e:
-            pass # Un candado de seguridad para que el flujo principal nunca se rompa
+            pass # Evita caídas críticas de la interfaz
             
-        st.write("") # Un pequeño espacio estético
+        st.write("") 
 
         # --- PODIO DE LA FAMA ---
         st.subheader("👑 El Podio de la Fama")
